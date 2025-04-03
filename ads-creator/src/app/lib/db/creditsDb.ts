@@ -2,7 +2,7 @@
 
 import { pool } from './db';
 import { sql } from '@vercel/postgres';
-import { auth } from '@/auth';
+import { auth } from '../auth';
 
 // Initialize the credits tables if they don't exist
 export async function initCreditsTables() {

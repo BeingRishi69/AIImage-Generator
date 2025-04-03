@@ -1,7 +1,7 @@
 'use server';
 
 import bcrypt from 'bcryptjs';
-import { supabase } from '@/app/lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 // Define user type
 export interface User {

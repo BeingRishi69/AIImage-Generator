@@ -2,7 +2,6 @@
 
 import { sql } from '@vercel/postgres';
 import { hash } from 'bcrypt';
-import { initCreditsTables } from './creditsDb';
 
 export const pool = sql;
 
@@ -35,8 +34,28 @@ export async function initializeDatabase() {
       console.log('Demo user created');
     }
 
-    // Initialize credits system tables
-    await initCreditsTables();
+    // Initialize credits tables manually
+    await sql`
+      CREATE TABLE IF NOT EXISTS user_credits (
+        user_id TEXT PRIMARY KEY,
+        credits INTEGER NOT NULL DEFAULT 0,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS credit_transactions (
+        id SERIAL PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        amount INTEGER NOT NULL,
+        type TEXT NOT NULL,
+        description TEXT,
+        price_usd DECIMAL(10, 2),
+        reference_id TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES user_credits(user_id)
+      )
+    `;
 
     console.log('Database initialized successfully');
   } catch (error) {

@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { verifyCredentials, seedInitialUser, getUserByEmail, createUser } from "@/app/lib/db/userDb";
-import { addInitialCreditsForNewUser } from "@/app/lib/db/creditsDb";
+import { verifyCredentials, seedInitialUser, getUserByEmail, createUser } from "../../../../lib/db/userDb";
+import { addInitialCreditsForNewUser } from "../../../../lib/db/creditsDb";
 import bcrypt from "bcryptjs";
 
 // Seed initial user when the API is first accessed

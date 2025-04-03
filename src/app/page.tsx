@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Header from './components/Header';
-import ImageUploader from './components/ImageUploader';
+import ImageUploader from '@/app/components/ImageUploader'
 import ResultsPage from './components/ResultsPage';
 import { generateProductImage, editProductImage } from './lib/openai';
 import LoadingScreen from './components/LoadingScreen';

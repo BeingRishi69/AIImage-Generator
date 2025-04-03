@@ -1,9 +1,14 @@
+'use server';
 import OpenAI from 'openai';
 
 // Initialize OpenAI client
+// In a production environment, you should use environment variables for API keys
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || '',
 });
+
+// Keep track of the original product description between edits
+let originalProductDescription = "";
 
 type ImageResponse = {
   success: boolean;

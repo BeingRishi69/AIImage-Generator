@@ -1,15 +1,15 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import Header from '@/app/components/Header';
-import ImageUploader from '@/app/components/ImageUploader';
-import ResultsPage from '@/app/components/ResultsPage';
-import { generateProductImage, editProductImage } from '@/app/lib/openai';
-import LoadingScreen from '@/app/components/LoadingScreen';
+import Header from './components/Header';
+import ImageUploader from './components/ImageUploader';
+import ResultsPage from './components/ResultsPage';
+import LoadingScreen from './components/LoadingScreen';
 import { useRouter } from 'next/navigation';
-import { getUserCredits, useCredits } from '@/app/lib/db/creditsDb';
+import { getUserCredits, useCredits } from './lib/db/creditsDb';
 import Link from 'next/link';
 import { FiCreditCard, FiAlertCircle } from 'react-icons/fi';
+import { generateImage, editImage } from './actions';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -57,7 +57,7 @@ export default function Home() {
     setIsGenerating(true);
     
     try {
-      const result = await generateProductImage(file, productDescription);
+      const result = await generateImage(file, productDescription);
       
       if (result.success && result.generatedImageUrl) {
         setGeneratedImageUrl(result.generatedImageUrl);
@@ -101,7 +101,7 @@ export default function Home() {
     setIsGenerating(true);
     
     try {
-      const result = await editProductImage(generatedImageUrl as string, message);
+      const result = await editImage(generatedImageUrl as string, message);
       
       if (result.success && result.generatedImageUrl) {
         setGeneratedImageUrl(result.generatedImageUrl);

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Header from './components/Header';
 import ImageUploader from '@/app/components/ImageUploader'
-import ResultsPage from './components/ResultsPage';
+import ResultsPage from '@/app/components/ResultsPage'
 import { generateProductImage, editProductImage } from './lib/openai';
 import LoadingScreen from './components/LoadingScreen';
 import { useRouter } from 'next/navigation';

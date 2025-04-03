@@ -4,12 +4,12 @@ import { useSession } from 'next-auth/react';
 import Header from './components/Header';
 import ImageUploader from './components/ImageUploader';
 import ResultsPage from './components/ResultsPage';
+import { generateProductImage, editProductImage } from './lib/openai';
 import LoadingScreen from './components/LoadingScreen';
 import { useRouter } from 'next/navigation';
 import { getUserCredits, useCredits } from './lib/db/creditsDb';
 import Link from 'next/link';
 import { FiCreditCard, FiAlertCircle } from 'react-icons/fi';
-import { generateImage, editImage } from './actions';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -57,7 +57,7 @@ export default function Home() {
     setIsGenerating(true);
     
     try {
-      const result = await generateImage(file, productDescription);
+      const result = await generateProductImage(file, productDescription);
       
       if (result.success && result.generatedImageUrl) {
         setGeneratedImageUrl(result.generatedImageUrl);
@@ -86,22 +86,22 @@ export default function Home() {
     }
   };
   
-  const handleSendMessage = async (message: string) => {
+  const handleSendMessage = async (message: string): Promise<string> => {
     if (!session?.user?.id) {
       setErrorMessage('You must be signed in to edit images.');
-      return;
+      throw new Error('Not authenticated');
     }
 
     if (userCredits !== null && userCredits < CREDITS_PER_GENERATION) {
       setErrorMessage(`You need at least ${CREDITS_PER_GENERATION} credits to edit this image. Please purchase more credits.`);
-      return;
+      throw new Error('Insufficient credits');
     }
 
     setErrorMessage(null);
     setIsGenerating(true);
     
     try {
-      const result = await editImage(generatedImageUrl as string, message);
+      const result = await editProductImage(generatedImageUrl as string, message);
       
       if (result.success && result.generatedImageUrl) {
         setGeneratedImageUrl(result.generatedImageUrl);
@@ -118,12 +118,16 @@ export default function Home() {
           const updatedCredits = await getUserCredits(session.user.id as string);
           setUserCredits(updatedCredits);
         }
+        
+        return result.generatedImageUrl;
       } else {
         setErrorMessage(result.error || 'Failed to edit image');
+        throw new Error(result.error || 'Failed to edit image');
       }
     } catch (error) {
       console.error('Error editing image:', error);
       setErrorMessage('An error occurred while editing the image. Please try again.');
+      throw error;
     } finally {
       setIsGenerating(false);
     }
@@ -199,4 +203,4 @@ export default function Home() {
       </div>
     </main>
   );
-} 
+}

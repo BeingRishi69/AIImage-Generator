@@ -1,10 +1,10 @@
-'use server';
 import OpenAI from 'openai';
 
 // Initialize OpenAI client
 // In a production environment, you should use environment variables for API keys
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || '',
+  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || '',
+  dangerouslyAllowBrowser: true // For client-side use (in production, use server API routes)
 });
 
 // Keep track of the original product description between edits
@@ -16,6 +16,9 @@ type ImageResponse = {
   error?: string;
 };
 
+/**
+ * Generates a product photoshoot image based on a description
+ */
 export async function generateProductImage(file: File, productDescription: string): Promise<ImageResponse> {
   try {
     if (!productDescription) {
@@ -66,6 +69,10 @@ export async function generateProductImage(file: File, productDescription: strin
   }
 }
 
+/**
+ * Edits a previously generated image based on user instructions
+ * while maintaining the context of the original product
+ */
 export async function editProductImage(imageUrl: string, prompt: string): Promise<ImageResponse> {
   try {
     if (!prompt || !imageUrl) {
@@ -104,6 +111,40 @@ export async function editProductImage(imageUrl: string, prompt: string): Promis
       error: error.message || 'An error occurred during image editing'
     };
   }
+}
+
+/**
+ * Helper function to convert a base64 image to a blob for the OpenAI API
+ */
+async function convertBase64ToBlob(base64Image: string): Promise<Blob> {
+  // Remove data URL prefix if present
+  const base64Data = base64Image.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+  
+  // Convert base64 to binary
+  const binaryString = atob(base64Data);
+  const bytes = new Uint8Array(binaryString.length);
+  
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  
+  // Create blob
+  return new Blob([bytes], { type: 'image/png' });
+}
+
+/**
+ * Helper function to fetch an image and convert it to base64
+ */
+async function fetchImageAsBase64(url: string): Promise<string> {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
 
 // Helper function to convert File to base64

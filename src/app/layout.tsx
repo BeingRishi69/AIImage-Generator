@@ -11,7 +11,7 @@ initializeDatabase().catch(err => {
 });
 
 export const metadata = {
-  title: 'AI Image Generator',
+  title: 'AI Ads Creator',
   description: 'Generate professional product images for your marketing campaigns',
 };
 
@@ -29,4 +29,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-} 
+}

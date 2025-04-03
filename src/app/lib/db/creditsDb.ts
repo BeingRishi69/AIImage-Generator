@@ -2,7 +2,18 @@
 
 import { pool } from './db';
 import { sql } from '@vercel/postgres';
-import { auth } from '@/auth';
+import { auth } from '@/app/lib/auth';
+
+// Define transaction type
+export interface Transaction {
+  id: number;
+  amount: number;
+  type: 'add' | 'use' | 'purchase';
+  description: string;
+  price_usd?: number;
+  reference_id?: string;
+  created_at: Date;
+}
 
 // Initialize the credits tables if they don't exist
 export async function initCreditsTables() {
@@ -35,6 +46,34 @@ export async function initCreditsTables() {
   } catch (error) {
     console.error('Error initializing credits tables:', error);
     throw error;
+  }
+}
+
+// Add initial credits for new user
+export async function addInitialCredits(userId: string, amount: number = 10): Promise<void> {
+  try {
+    // Check if user already has credits
+    const userCredits = await sql`
+      SELECT credits FROM user_credits WHERE user_id = ${userId}
+    `;
+    
+    // If user already has a credits record, do nothing
+    if (userCredits.rowCount > 0) {
+      return;
+    }
+    
+    // Add initial credits
+    await addCredits(
+      userId,
+      amount,
+      'Welcome bonus',
+      'initial_credits'
+    );
+    
+    console.log(`Added ${amount} initial credits to new user ${userId}`);
+  } catch (error) {
+    console.error('Error adding initial credits:', error);
+    // Don't throw error to avoid blocking user creation/login
   }
 }
 
@@ -183,9 +222,9 @@ export async function logTransaction(
 }
 
 // Get a user's transaction history
-export async function getUserTransactions(userId: string) {
+export async function getUserTransactions(userId: string): Promise<Transaction[]> {
   try {
-    const result = await sql`
+    const result = await sql<Transaction>`
       SELECT 
         id,
         amount,
@@ -199,10 +238,10 @@ export async function getUserTransactions(userId: string) {
       ORDER BY created_at DESC
       LIMIT 50
     `;
-
+    
     return result.rows;
   } catch (error) {
-    console.error('Error getting transaction history:', error);
+    console.error('Error getting user transactions:', error);
     throw error;
   }
 } 

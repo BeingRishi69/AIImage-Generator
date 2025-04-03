@@ -1,3 +1,93 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities; 
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --purple-primary: #6b46c1;
+  --purple-light: #9c71e0;
+  --purple-extralight: #f5f3ff;
+  --purple-dark: #553c9a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--purple-light);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--purple-primary);
+}
+
+/* Hide scrollbar utility */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom purple button styles */
+.btn-purple {
+  background-color: var(--purple-primary);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.btn-purple:hover {
+  background-color: var(--purple-dark);
+}
+
+.btn-purple-outline {
+  border: 1px solid var(--purple-primary);
+  color: var(--purple-primary);
+  background-color: transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-purple-outline:hover {
+  background-color: var(--purple-extralight);
+}
+
+/* Animations */
+@keyframes pulse-gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}

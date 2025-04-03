@@ -1,13 +1,13 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import Header from './components/Header';
-import ImageUploader from '@/app/components/ImageUploader'
-import ResultsPage from '@/app/components/ResultsPage'
-import { generateProductImage, editProductImage } from './lib/openai';
-import LoadingScreen from './components/LoadingScreen';
+import Header from '@/app/components/Header';
+import ImageUploader from '@/app/components/ImageUploader';
+import ResultsPage from '@/app/components/ResultsPage';
+import { generateProductImage, editProductImage } from '@/app/lib/openai';
+import LoadingScreen from '@/app/components/LoadingScreen';
 import { useRouter } from 'next/navigation';
-import { getUserCredits, useCredits } from './lib/db/creditsDb';
+import { getUserCredits, useCredits } from '@/app/lib/db/creditsDb';
 import Link from 'next/link';
 import { FiCreditCard, FiAlertCircle } from 'react-icons/fi';
 

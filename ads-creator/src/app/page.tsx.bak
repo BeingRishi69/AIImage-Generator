@@ -1,0 +1,97 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useSession } from 'next-auth/react';
+import Header from './components/Header';
+import ImageUploader from './components/ImageUploader';
+import ResultsPage from './components/ResultsPage';
+import { generateImage, editImage } from './services/openai';
+import LoadingScreen from './components/LoadingScreen';
+
+export default function Home() {
+  const { data: session, status } = useSession();
+  const [currentStep, setCurrentStep] = useState<'upload' | 'results'>('upload');
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [productDescription, setProductDescription] = useState('');
+
+  const handleImageUpload = async (file: File) => {
+    if (!productDescription) {
+      alert('Please provide a product description');
+      return;
+    }
+
+    setIsGenerating(true);
+    
+    try {
+      // Get the AI prompt template from localStorage or use default
+      const aiPromptTemplate = localStorage.getItem('aiPromptTemplate') || 
+        `Create a professional product photoshoot of the following product: [PRODUCT_DESCRIPTION]. 
+        Use beautiful lighting, soft shadows, and a clean background. 
+        Make the product stand out with high quality studio lighting and professional styling. 
+        The image should look like a premium commercial product photograph.
+        IMPORTANT: Make sure the product is clearly visible and is the main focus of the image.`;
+
+      // Replace placeholder with actual product description
+      const prompt = aiPromptTemplate.replace('[PRODUCT_DESCRIPTION]', productDescription);
+      
+      // Generate image using OpenAI
+      const imageUrl = await generateProductImage(productDescription);
+      setGeneratedImageUrl(imageUrl);
+      setCurrentStep('results');
+    } catch (error) {
+      console.error('Error generating image:', error);
+      alert('There was an error generating the image. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleSendMessage = async (message: string): Promise<string> => {
+    setIsGenerating(true);
+    
+    try {
+      // Edit the image based on the user's message
+      const newImageUrl = await editProductImage(generatedImageUrl!, message);
+      setGeneratedImageUrl(newImageUrl);
+      return newImageUrl;
+    } catch (error) {
+      console.error('Error editing image:', error);
+      throw error;
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleGoBack = () => {
+    setCurrentStep('upload');
+    setGeneratedImageUrl(null);
+  };
+
+  return (
+    <main className="min-h-screen bg-gray-50">
+      <Header />
+      
+      <div className="container mx-auto px-4 py-8">
+        {currentStep === 'upload' && (
+          <ImageUploader 
+            onImageUpload={handleImageUpload} 
+            onDescriptionChange={setProductDescription} 
+          />
+        )}
+        
+        {currentStep === 'results' && generatedImageUrl && (
+          <ResultsPage 
+            initialImageUrl={generatedImageUrl} 
+            onSendMessage={handleSendMessage}
+            productDescription={productDescription}
+            onGoBack={handleGoBack}
+            isGenerating={isGenerating}
+          />
+        )}
+        
+        {isGenerating && <LoadingScreen />}
+      </div>
+    </main>
+  );
+}

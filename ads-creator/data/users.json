@@ -1,0 +1,18 @@
+[
+  {
+    "id": "user-1743708267533",
+    "name": "Demo User",
+    "email": "user@example.com",
+    "password": "$2b$10$gwedu95K1AD5M6BozmxFMuoD/NzIvC21Ri2VvqOcni2SqyR/Jq/KW",
+    "image": "https://ui-avatars.com/api/?name=Demo%20User&background=random",
+    "createdAt": "2025-04-03T19:24:27.533Z"
+  },
+  {
+    "id": "user-1743708280001",
+    "name": "rishi",
+    "email": "rajr13248@gmail.com",
+    "password": "$2b$10$bbhN7gtMop4ADpV0ucyK..1oT3UVISW.5OeJ6gVkKrGUdVrmTvUlG",
+    "image": "https://ui-avatars.com/api/?name=rishi&background=random",
+    "createdAt": "2025-04-03T19:24:40.001Z"
+  }
+]
